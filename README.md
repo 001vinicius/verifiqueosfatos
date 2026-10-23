@@ -90,6 +90,49 @@ Cada objeto no array seguindo essa estrutura será renderizado como um card cont
 
 Para atualizar a página para todos os clients, você só tem que atualizar a posts.json, lembrando que ela deve ser uma single source of truth. Se você adiciona um objeto novo, nas próximas requests todos os clientes passam a receber a atualziação e a tela reagirá automáticamente.
 
+## Então como adicionamos ou removemos declarações
+
+Sua aplicação deve apontar pra um único /posts.json servido através de qualquer serviço. Você apenas edita esse /posts.json e atualiza ele. No próximo round todos os clientes conectados receberão o update. Exemplo:
+
+Seu arquivo posts.json está no ar assim:
+
+```
+[]
+```
+
+Isso significa que todos os clientes estarão vendo NENHUMA declaração. Digamos que o Lula disse algo e você verificará. Você edita seu posts.json da maneira abaixo e atualiza o server que o está distribuindo, exemplo:
+
+```
+[
+  {
+    "n": 1,
+    "c": 1,
+    "t": "Aqui estará a declaração feita pelo candidato descrita o mais fielmente possível",
+    "v": "Aqui estará a verificação feita, com fontes e referências."
+  },
+]
+```
+
+Suba isso no serviço que está distribuindo sua posts.json e pronto, no proximo round de update todos os clientes vão começar a mostrar a declaração verificada adicionada. Esse arquivo é incremental, portanto, digamos que na sequencia o Flávio disse algo. Novamente: vc adiciona ao Array de declarações, sobe novamente no seu server e aguarda o update, ele ficaria agora assim:
+
+```
+[
+  {
+    "n": 1,
+    "c": 1,
+    "t": "Aqui estará a declaração feita pelo candidato descrita o mais fielmente possível",
+    "v": "Aqui estará a verificação feita, com fontes e referências."
+  },  
+  {
+    "n": 2,
+    "c": 2,
+    "t": "Aqui estará a declaração feita pelo candidato descrita o mais fielmente possível",
+    "v": "Aqui estará a verificação feita, com fontes e referências."
+  }  
+]
+
+E assim adiante. Para entender esta estrutura, leia a sessão que explica sobre a posts.json nesta README. Mas em poucas palavras: a app é uma snapshot e front do que está declarado na posts.json. Para mostrar uma nova declaração apenas incremente a posts.json (que deve ser distribuída via ponto único de verdade, ou seja: mesmo endpoint e mesmo arquivo sem cache pra todo client). Quando sua posts.json muda, toda pessoa conectada recebe a mudança.
+
 ## Arquitetura e Códigos Enxutos (De Verdade!)
 
 Como já dito: esta app visa otimização máxima. Assim todo o código e funcionamento é feito para rodar com o mínimo em infra estruturas mínimas aptas a servir milhões de requests. Tenha isso em mente ao propor mudanças.
