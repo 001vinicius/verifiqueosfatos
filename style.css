@@ -134,6 +134,39 @@ main.loading:empty::after {
   margin: 0;
 }
 
+/* Como classificamos: o critério de cada selo, sem JS */
+.how {
+  max-width: 560px;
+  margin: 0 auto 20px;
+  color: var(--ink2);
+  font-size: 15px;
+  text-align: left;
+}
+
+.how summary {
+  padding: 12px 0;
+  color: var(--ink);
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+}
+
+.how dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 12px 14px;
+  margin: 8px 0 16px;
+}
+
+.how dd {
+  margin: 0;
+}
+
+.foot .how p {
+  margin-bottom: 10px;
+}
+
 /* Cards */
 .article-grid {
   display: flex;
