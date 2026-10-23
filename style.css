@@ -71,158 +71,97 @@ main:empty::after {
   color: var(--muted);
 }
 
-/* Main Article Card */
-.article-card {
-  --badge-bg: #e2e8f0;
-  --badge-color: #334155;
-  --border-color: #e2e8f0;
-  --card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
-
-  background: #ffffff;
-  border-radius: 16px;
-  border: 1px solid var(--border-color);
-  box-shadow: var(--card-shadow);
-  padding: 1.25rem 1.5rem;
+/* Cards */
+.article-grid {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
-
-  /* Staggered Entrance Animation */
-  opacity: 0;
-  transform: translateY(20px);
-  animation: cardFadeIn 0.5s ease forwards;
-  animation-delay: calc(var(--animation-order, 0) * 80ms);
+  gap: 20px;
 }
 
-.article-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 30px -4px rgba(0, 0, 0, 0.1);
-  border-color: #cbd5e1;
+.card {
+  padding: 28px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  overflow-wrap: anywhere;
 }
 
-/* Accent top border highlight */
-.article-card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #3b82f6, #6366f1);
-  opacity: 0.85;
-}
-
-/* Header & Badges */
-.card-header {
+.card header {
   display: flex;
-  width: 100%;
-  gap: 0.5rem;
   align-items: center;
-  justify-content: start;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.card img {
+  flex: none;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--line);
+}
+
+.card h2 {
+  flex: 1;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
 }
 
 .badge {
-  padding: 2px 8px;
-  border-radius: 8px;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 16px 0 14px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 500;
 }
 
-/* Name/Speaker Badge */
-.name {
-  font-size: 18px;
-  font-weight: 600;
+/* Ponto de resultado: Verdadeiro, Falso, Parcial. Sempre acompanha um rótulo. */
+.badge::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--dot);
+}
+
+[data-c="1"] { --dot: #16A34A; }
+[data-c="2"] { --dot: #DC2626; }
+[data-c="3"] { --dot: #8E939C; }
+
+.label {
   display: block;
   margin-bottom: 8px;
-}
-
-/* Fact-Check Status Badge */
-.badge.check {
-  background-color: #3b82f6;
-  color: #ffffff;
-  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);
-}
-
-.badge.check[data-type="1"] {
-  background-color: #008000;
-}
-
-.badge.check[data-type="2"] {
-  background-color: #ff0000;
-}
-
-.badge.check[data-type="3"] {
-  background-color: #ffa500;
-}
-
-.article-card {
-  margin-bottom: 24px;
-}
-
-.article-card img {
-  width: 60px;
-  height: 60px;
-  border-radius: 100%;
-  object-fit: cover;
-}
-
-/* Dynamic Fact-Check Color Styles based on data attribute or modifier */
-.article-card[data-check="true"] .badge.check,
-.badge.check-true,
-.badge.check-verdadeiro {
-  background-color: #10b981; /* Emerald Green */
-  color: #ffffff;
-  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
-}
-
-.article-card[data-check="false"] .badge.check,
-.badge.check-false,
-.badge.check-falso {
-  background-color: #ef4444; /* Bright Red */
-  color: #ffffff;
-  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
-}
-
-.article-card[data-check="impreciso"] .badge.check,
-.badge.check-impreciso {
-  background-color: #f59e0b; /* Amber / Warning */
-  color: #ffffff;
-  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3);
-}
-
-/* Card Body */
-.card-body {
-  display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
-}
-
-/* Quote/Statement ("Disse que...") */
-.card-title {
-  margin: 0;
-  font-size: 0.95rem;
+  color: var(--muted);
+  font-size: 12px;
   font-weight: 600;
-  color: #334155;
-  line-height: 1.4;
-  padding-left: 0.75rem;
-  border-left: 3px solid #cbd5e1;
-  font-style: italic;
+  letter-spacing: .06em;
+  text-transform: uppercase;
 }
 
-/* Fact-Check Context/Verdict Text */
-.card-text {
+.said {
+  margin-bottom: 22px;
+  padding: 20px;
+  background: var(--soft);
+  border-radius: 16px;
+}
+
+.said p {
   margin: 0;
-  font-size: 0.9rem;
-  color: #64748b;
-  line-height: 1.5;
+  font: 22px/1.5 var(--serif);
 }
 
-@keyframes cardFadeIn {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.card > p {
+  margin: 0;
+  color: var(--ink2);
 }
 
 @media (max-width: 600px) {
@@ -237,6 +176,44 @@ main:empty::after {
 
   h1 {
     font-size: 21px;
+  }
+
+  .article-grid {
+    gap: 16px;
+  }
+
+  .card {
+    padding: 20px;
+    border-radius: 20px;
+  }
+
+  .card header {
+    gap: 12px;
+  }
+
+  .card img {
+    width: 48px;
+    height: 48px;
+  }
+
+  .card h2 {
+    font-size: 17px;
+  }
+
+  .said {
+    margin-bottom: 20px;
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  .said p {
+    font-size: 20px;
+    line-height: 1.45;
+  }
+
+  .card > p {
+    font-size: 15px;
+    line-height: 1.6;
   }
 
   .long {
