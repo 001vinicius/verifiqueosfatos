@@ -101,12 +101,13 @@
             <h2>${labels.n[item.n]}</h2>
             <span class="badge" data-c="${item.c}">${labels.c[item.c]}</span>
           </header>
-          <div class="said">
-            <span class="label">Disse que</span>
+          <span class="label">Disse que:</span>
+          <blockquote class="said">
             <p>${escapeHTML(item.t)}</p>
-          </div>
-          <span class="label">Verificação</span>
+          </blockquote>
+          <span class="label">Verificação:</span>
           <p>${escapeHTML(item.v)}</p>
+          ${createSourcesHTML(item.s)}
         </article>
       `;
     }
@@ -157,6 +158,14 @@
       // Update in-memory reference
       currentPosts = items;
       
+    }
+
+    function createSourcesHTML(sources) {
+      const links = (Array.isArray(sources) ? sources : [])
+        .map(u => { try { return new URL(u); } catch {} })
+        .filter(u => u && (u.protocol === 'https:' || u.protocol === 'http:'))
+        .map(u => `<li><a href="${escapeHTML(u.href)}" target="_blank" rel="noopener noreferrer">${escapeHTML(u.hostname.replace(/^www\./, ''))}</a></li>`);
+      return links.length ? `<span class="label">Fontes:</span><ul class="sources">${links.join('')}</ul>` : '';
     }
 
     function escapeHTML(str) {
