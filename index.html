@@ -174,7 +174,7 @@
     const URI_POSTS_JSON = '/posts.json';
 
     function update() {
-      fetch(`${URI_POSTS_JSON}?v=${generateAlphanumeric()}`)
+      return fetch(`${URI_POSTS_JSON}?v=${generateAlphanumeric()}`)
         .then(r => r.json())
         .then(data => {
           if (Array.isArray(data) && !data.length) {
@@ -204,7 +204,9 @@
 
     // Initial render from localStorage, then perform first fetch
     render();
-    update();
+    // Live region is enabled only after the first cards settle (screen readers
+    // announce DOM changes asynchronously), so just checks that arrive later are read
+    update().then(() => setTimeout(() => document.querySelector('main').setAttribute('aria-live', 'polite'), 1000));
     setInterval(update, INTERVAL);
   </script>
 
