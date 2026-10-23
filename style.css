@@ -13,6 +13,20 @@
   color-scheme: light;
 }
 
+[data-theme="dark"] {
+  --bg: #0A0A0A;
+  --surface: #171717;
+  --ink: #FAFAFA;
+  --ink2: #D4D4D4;
+  --muted: #A3A3A3;
+  --line: #2E2E2E;
+  --line2: #404040;
+  --soft: #262626;
+  --inv-bg: #FAFAFA;
+  --inv-fg: #171717;
+  color-scheme: dark;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -58,6 +72,30 @@ body {
 h1 {
   margin: 0;
   font: 400 24px/1.2 var(--serif);
+}
+
+.theme {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-left: auto;
+  padding: 0;
+  background: var(--surface);
+  border: 1px solid var(--line2);
+  border-radius: 50%;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.sun,
+[data-theme="dark"] .moon {
+  display: none;
+}
+
+[data-theme="dark"] .sun {
+  display: block;
 }
 
 .sub {
