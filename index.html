@@ -131,8 +131,12 @@
       `;
     }
 
+    function canRender(item) {
+      return !!(item && labels.n[item.n] && labels.c[item.c] && item.t != null && item.t !== '');
+    }
+
     function render(newData, containerSelector = 'main') {
-      const items = newData || getLS();
+      const items = (Array.isArray(newData) ? newData : getLS()).filter(canRender);
 
       if (!items || !items.length) {
         document.querySelector(containerSelector).innerHTML = '';
@@ -194,7 +198,7 @@
     }
 
     function escapeHTML(str) {
-      return str.replace(/[&<>'"]/g, 
+      return String(str ?? '').replace(/[&<>'"]/g,
         tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
       );
     }
@@ -220,7 +224,9 @@
           // First answer from the server: from now on an empty list really means "nothing yet"
           document.querySelector('main').classList.remove('loading');
 
-          if (Array.isArray(data) && !data.length) {
+          if (!Array.isArray(data)) return;
+
+          if (!data.length) {
             window.localStorage.removeItem('data');
             render([]);
           }
