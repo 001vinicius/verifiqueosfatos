@@ -115,6 +115,11 @@ main:empty::after {
   color: var(--muted);
 }
 
+/* Primeira visita: enquanto o posts.json não chega, não dizer que está vazio */
+main.loading:empty::after {
+  content: 'Carregando as checagens…';
+}
+
 /* Footer */
 .foot {
   margin-top: 32px;
