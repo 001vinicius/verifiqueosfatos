@@ -55,7 +55,7 @@
       </button>
     </header>
 
-    <main></main>
+    <main class="loading"></main>
 
     <footer class="foot">
       <p>Um projeto feito pela comunidade para a comunidade.</p>
@@ -183,6 +183,9 @@
       return fetch(`${URI_POSTS_JSON}?v=${generateAlphanumeric()}`)
         .then(r => r.json())
         .then(data => {
+          // First answer from the server: from now on an empty list really means "nothing yet"
+          document.querySelector('main').classList.remove('loading');
+
           if (Array.isArray(data) && !data.length) {
             window.localStorage.removeItem('data');
             render([]);
