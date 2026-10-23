@@ -93,9 +93,9 @@
       }
     }
 
-    function createCardHTML(item) {
+    function createCardHTML(item, index) {
       return `
-        <article class="card">
+        <article class="card" id="f${index}">
           <header>
             <img src="/${labels.i[item.n]}" alt="" width="56" height="56" decoding="async" loading="lazy">
             <h2>${labels.n[item.n]}</h2>
@@ -108,6 +108,10 @@
           <span class="label">Verificação:</span>
           <p>${escapeHTML(item.v)}</p>
           ${createSourcesHTML(item.s)}
+          <button class="share" type="button" data-index="${index}">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3m0 0L7 8m5-5 5 5M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>
+            <span>Compartilhar</span>
+          </button>
         </article>
       `;
     }
@@ -144,9 +148,9 @@
         if (newItems.length > 0) {
           const fragment = document.createDocumentFragment();
           
-          newItems.forEach(item => {
+          newItems.forEach((item, i) => {
             const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = createCardHTML(item).trim();
+            tempDiv.innerHTML = createCardHTML(item, currentPosts.length + i).trim();
             fragment.appendChild(tempDiv.firstChild);
           });
 
@@ -157,7 +161,13 @@
 
       // Update in-memory reference
       currentPosts = items;
-      
+
+      const shared = location.hash && document.getElementById(location.hash.slice(1));
+      if (shared) {
+        shared.classList.add('shared');
+        history.replaceState(null, '', location.pathname);
+        setTimeout(() => shared.scrollIntoView({ block: 'center' }), 400);
+      }
     }
 
     function createSourcesHTML(sources) {
@@ -216,6 +226,28 @@
         localStorage.setItem('theme', dark ? 'dark' : 'light');
       } catch {}
     };
+
+    document.addEventListener('click', async (e) => {
+      const btn = e.target.closest('.share');
+      const item = btn && currentPosts[btn.dataset.index];
+      if (!item) return;
+
+      const title = `Veja se ${labels.n[item.n]} falou a verdade`;
+      const text = `${labels.n[item.n]} disse que: "${item.t}"\n\nSerá que é verdade? Veja a checagem:`;
+      const url = `${location.origin}/#f${btn.dataset.index}`;
+
+      if (navigator.share) {
+        navigator.share({ title, text, url }).catch(() => {});
+        return;
+      }
+
+      try {
+        await navigator.clipboard.writeText(`${text}\n${url}`);
+        const label = btn.querySelector('span');
+        label.textContent = 'Copiado!';
+        setTimeout(() => label.textContent = 'Compartilhar', 2000);
+      } catch {}
+    });
 
     // Initial render from localStorage, then perform first fetch
     render();
