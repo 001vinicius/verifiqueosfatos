@@ -18,10 +18,6 @@
   </div>
 
   <script>
-    const DELAY = 15000;
-    const NOW = new Date();
-    const INTERVAL = DELAY + NOW.getSeconds();
-
     const labels = {
       // name
       n: {
@@ -134,10 +130,15 @@
         result += chars.charAt(Math.floor(Math.random() * chars.length));
       }
       return result;
-    }    
+    }
+    
+    const DELAY = 15000;
+    const NOW = new Date();
+    const INTERVAL = DELAY + NOW.getSeconds();    
+    const URI_POSTS_JSON = '/posts.json';
 
     function update() {
-      fetch('/posts.json?v=' + generateAlphanumeric())
+      fetch(`${URI_POSTS_JSON}?v=${generateAlphanumeric()}`)
         .then(r => r.json())
         .then(data => {
           if (Array.isArray(data) && !data.length) {

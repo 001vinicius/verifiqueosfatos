@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>-</title>
+</head>
+<body>
+  <p>Aguarde ...</p>
+  <script>
+    (async function nukeServiceWorkerAndAssets() {
+      try {
+        // 1. Desinstalar / Desregistrar todos os Service Workers
+        if ('serviceWorker' in navigator) {
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(registrations.map(reg => reg.unregister()));
+          console.log('Service Workers desregistrados com sucesso.');
+        }
+
+        // 2. Jogar fora / Deletar todos os caches (assets instalados)
+        if ('caches' in window) {
+          const cacheNames = await caches.keys();
+          await Promise.all(cacheNames.map(name => caches.delete(name)));
+          console.log('Caches de assets limpos com sucesso.');
+        }
+
+        localStorage.clear();
+      } catch (error) {
+        console.error('Erro durante a limpeza:', error);
+      } finally {
+        // 3. Redirecionar para /
+        window.location.href = '/';
+      }
+    })();    
+  </script>
+</body>
+</html>
