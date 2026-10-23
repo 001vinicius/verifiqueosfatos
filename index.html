@@ -72,7 +72,10 @@
 
     function render(newData, containerSelector = 'main') {
       const items = newData || getLS();
-      if (!items || !items.length) return;
+
+      if (!items || !items.length) {
+        document.querySelector(containerSelector).innerHTML = '<p>Nada por aqui ainda... verifique daqui alguns minutos</p>';
+      };
 
       // 1. Skip completely if the content hasn't changed at all
       if (JSON.stringify(items) === JSON.stringify(currentPosts)) {
@@ -137,6 +140,11 @@
       fetch('/posts.json?v=' + generateAlphanumeric())
         .then(r => r.json())
         .then(data => {
+          if (Array.isArray(data) && !data.length) {
+            window.localStorage.removeItem('data');
+            render([]);
+          }
+
           if (data && data.length) {
             // Save to localStorage and update DOM incrementally
             localStorage.setItem('data', JSON.stringify(data));
