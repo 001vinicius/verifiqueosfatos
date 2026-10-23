@@ -280,6 +280,18 @@
     // announce DOM changes asynchronously), so just checks that arrive later are read
     update().then(() => setTimeout(() => document.querySelector('main').setAttribute('aria-live', 'polite'), 1000));
     setInterval(update, INTERVAL);
+
+    // Keeps the screen on while the page is visible, so the phone doesn't sleep
+    // during the debate. The browser releases the lock when the tab is hidden,
+    // so it's requested again on return. Fails silently where unsupported.
+    function keepScreenOn() {
+      if ('wakeLock' in navigator && document.visibilityState === 'visible') {
+        navigator.wakeLock.request('screen').catch(() => {});
+      }
+    }
+
+    keepScreenOn();
+    document.addEventListener('visibilitychange', keepScreenOn);
   </script>
 
   <script>
