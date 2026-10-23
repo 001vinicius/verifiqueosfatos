@@ -109,6 +109,20 @@ main:empty::after {
   color: var(--muted);
 }
 
+/* Footer */
+.foot {
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+.foot p {
+  margin: 0;
+}
+
 /* Cards */
 .article-grid {
   display: flex;
