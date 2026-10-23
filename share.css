@@ -116,7 +116,8 @@
   color: var(--inv-fg);
 }
 
-@media (max-width: 480px) {
+/* O layout lado a lado ocupa 756px; abaixo de 800px vira bandeja */
+@media (max-width: 800px) {
   .sh {
     width: 100%;
     max-width: none;
@@ -175,7 +176,7 @@
   }
 }
 
-@media (max-width: 480px) and (prefers-reduced-motion: no-preference) {
+@media (max-width: 800px) and (prefers-reduced-motion: no-preference) {
   .sh[open] {
     animation: sh-up .25s ease-out;
   }

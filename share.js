@@ -28,6 +28,10 @@
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3m-4 4 4-4 4 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>
               Compartilhar
             </button>
+            <button type="button" class="sh-btn" data-act="copy" hidden>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>
+              <span>Copiar imagem</span>
+            </button>
           </div>
         </div>
       </div>
@@ -37,10 +41,11 @@
   // Story colors (light, dark)
   const themes = [
     { bg: '#FAFAFA', ink: '#171717', ink2: '#404040', muted: '#525252', line: '#E5E5E5', soft: '#F0F0F0' },
-    { bg: '#0A0A0A', ink: '#FAFAFA', ink2: '#D4D4D4', muted: '#A3A3A3', line: '#2E2E2E', soft: '#171717' },
+    { bg: '#171717', ink: '#FAFAFA', ink2: '#D4D4D4', muted: '#A3A3A3', line: '#2E2E2E', soft: '#262626' },
   ];
 
-  const dotColors = { 1: '#16A34A', 2: '#DC2626', 3: '#8E939C' };
+  // Same tones as .badge in style.css
+  const tones = { 1: '#15803D', 2: '#B91C1C', 3: '#C2410C' };
   const SANS = 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
   const SERIF = 'Georgia, "Times New Roman", serif';
 
@@ -51,11 +56,13 @@
   const canvas = dialog.querySelector('canvas');
   const ctx = canvas.getContext('2d');
   const shareButton = dialog.querySelector('[data-act=share]');
+  const copyButton = dialog.querySelector('[data-act=copy]');
   let opener, card, dark, photo, blob;
 
   try {
     shareButton.hidden = !navigator.canShare({ files: [new File([''], 'a.png', { type: 'image/png' })] });
   } catch {}
+  copyButton.hidden = !self.ClipboardItem;
 
   const font = (weight, size, family = SANS) => ctx.font = `${weight} ${size}px ${family}`;
 
@@ -118,34 +125,28 @@
     ctx.fillStyle = t.bg;
     ctx.fillRect(0, 0, W, H);
 
-    // Author: round photo on a neutral circle
+    // Author: same look as .card img in the feed (56px, 10px corners)
     ctx.save();
     ctx.beginPath();
-    ctx.arc(X + 72, cy, 72, 0, Math.PI * 2);
+    ctx.roundRect(X, TOP, 144, 144, 26);
     ctx.fillStyle = t.line;
     ctx.fill();
     ctx.clip();
     if (photo) ctx.drawImage(photo, X, TOP, 144, 144);
     ctx.restore();
 
-    // Result seal: pill with colored dot + label
-    font(500, 42);
-    const sealW = 36 + 30 + 18 + ctx.measureText(result).width + 42;
+    // Result seal: same look as .badge in the feed, at 2.8x
+    font(600, 42);
+    const sealW = ctx.measureText(result).width + 90;
     const sealX = R - sealW;
     ctx.beginPath();
-    ctx.roundRect(sealX + 1.5, cy - 49.5, sealW - 3, 99, 49.5);
-    ctx.fillStyle = t.bg;
-    ctx.fill();
-    ctx.lineWidth = 3;
-    ctx.strokeStyle = t.line;
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.arc(sealX + 51, cy, 15, 0, Math.PI * 2);
-    ctx.fillStyle = dotColors[badge.dataset.c];
+    ctx.roundRect(sealX, cy - 61.5, sealW, 123, 61.5);
+    ctx.fillStyle = tones[badge.dataset.c];
     ctx.fill();
     ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillText(result, sealX + 45, cy + 2);
     ctx.fillStyle = t.ink;
-    ctx.fillText(result, sealX + 84, cy + 2);
 
     // Name and date, never wrapping
     const colX = X + 180, colW = sealX - 24 - colX;
@@ -168,15 +169,16 @@
     if (size < 48) font(500, size = 48, SERIF);
     lines = wrap(quote, quoteW, 5);
     const lh = size * 1.3;
-    const boxY = TOP + 204;
-    const textY = boxY + 48 + 33 + 24;
-    const boxH = textY - boxY + (lines.length - 1) * lh + size + 48;
+    const labelY = TOP + 204;
+    const boxY = labelY + 33 + 24;
+    const textY = boxY + 48;
+    const boxH = 48 + (lines.length - 1) * lh + size + 48;
+    ctx.textBaseline = 'top';
+    label('Disse que:', X, labelY, t.muted);
     ctx.beginPath();
     ctx.roundRect(X, boxY, R - X, boxH, 48);
     ctx.fillStyle = t.soft;
     ctx.fill();
-    ctx.textBaseline = 'top';
-    label('Disse que', X + 54, boxY + 48, t.muted);
     font(500, size, SERIF);
     ctx.fillStyle = t.ink;
     lines.forEach((l, i) => ctx.fillText(l, X + 54, textY + i * lh));
@@ -189,7 +191,7 @@
     const checkY = boxY + boxH + 60;
     const checkTextY = checkY + 33 + 24;
     const room = Math.floor((lineY - 48 - checkTextY - 42) / 63) + 1;
-    label('Verificação', X, checkY, t.muted);
+    label('Verificação:', X, checkY, t.muted);
     font(400, 42);
     ctx.fillStyle = t.ink2;
     wrap(card.querySelector(':scope > p').textContent, R - X, Math.max(1, Math.min(4, room)))
@@ -247,6 +249,16 @@
     navigator.share({ files: [new File([blob], fileName(), { type: 'image/png' })] }).catch(() => {});
   }
 
+  // Safari only keeps the click's user activation if the ClipboardItem gets a promise
+  function copy() {
+    const label = copyButton.querySelector('span');
+    navigator.clipboard.write([new ClipboardItem({ 'image/png': new Promise(r => canvas.toBlob(r, 'image/png')) })])
+      .then(() => {
+        label.textContent = 'Imagem copiada!';
+        setTimeout(() => label.textContent = 'Copiar imagem', 2000);
+      }, () => {});
+  }
+
   // Same-origin photo from the card itself, decoded before drawing
   function loadPhoto() {
     const current = card, img = new Image();
@@ -283,6 +295,7 @@
     else if (b.dataset.dark) setLook(b.dataset.dark === '1');
     else if (b.dataset.act === 'download') download();
     else if (b.dataset.act === 'share') share();
+    else if (b.dataset.act === 'copy') copy();
   });
 
   dialog.addEventListener('close', () => opener && opener.focus());
