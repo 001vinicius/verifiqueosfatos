@@ -10,14 +10,16 @@
   <link rel="stylesheet" href="/style.css">
   <meta name="theme-color" content="#FAFAFA">
   <script>
-    // Applies the saved theme before first paint. Light is the default.
+    // Applies the theme before first paint: the saved choice, otherwise the system's
     function setTheme(dark) {
       document.documentElement.dataset.theme = dark ? 'dark' : 'light';
       document.querySelector('meta[name=theme-color]').content = dark ? '#0A0A0A' : '#FAFAFA';
     }
+    let savedTheme = null;
     try {
-      setTheme(localStorage.getItem('theme') === 'dark');
+      savedTheme = localStorage.getItem('theme');
     } catch {}
+    setTheme(savedTheme ? savedTheme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches);
   </script>
 
   <title>Verifique os Fatos</title>
