@@ -204,22 +204,18 @@
       );
     }
 
-    function generateAlphanumeric(length = 6) {
-      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-      let result = '';
-      for (let i = 0; i < length; i++) {
-        result += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-      return result;
-    }
-    
     const DELAY = 15000;
-    const NOW = new Date();
-    const INTERVAL = DELAY + NOW.getSeconds();    
     const URI_POSTS_JSON = '/posts.json';
 
+    let timer, busy;
+
+    // Polls only while the tab is visible: hidden tabs cost zero requests
     function update() {
-      return fetch(`${URI_POSTS_JSON}?v=${generateAlphanumeric()}`)
+      clearTimeout(timer);
+      if (busy || document.hidden) return Promise.resolve();
+      busy = true;
+
+      return fetch(`${URI_POSTS_JSON}?v=${Date.now()}`)
         .then(r => r.json())
         .then(data => {
           // First answer from the server: from now on an empty list really means "nothing yet"
@@ -238,7 +234,12 @@
             render(data);
           }
         })
-        .catch(console.error);
+        .catch(console.error)
+        .finally(() => {
+          busy = false;
+          // Jitter spreads clients so they don't hit the host in sync
+          if (!document.hidden) timer = setTimeout(update, DELAY + Math.random() * 5000);
+        });
     }
 
     const themeButton = document.querySelector('.theme');
@@ -274,13 +275,14 @@
       } catch {}
     });
 
+    document.addEventListener('visibilitychange', update);
+    window.addEventListener('online', update);
+
     // Initial render from localStorage, then perform first fetch
     render();
     // Live region is enabled only after the first cards settle (screen readers
     // announce DOM changes asynchronously), so just checks that arrive later are read
     update().then(() => setTimeout(() => document.querySelector('main').setAttribute('aria-live', 'polite'), 1000));
-    setInterval(update, INTERVAL);
-
     // Keeps the screen on while the page is visible, so the phone doesn't sleep
     // during the debate. The browser releases the lock when the tab is hidden,
     // so it's requested again on return. Fails silently where unsupported.
