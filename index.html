@@ -18,7 +18,7 @@
   </div>
 
   <script>
-    const DELAY = 1000;
+    const DELAY = 120000;
     const NOW = new Date();
     const INTERVAL = DELAY + NOW.getSeconds();
 
@@ -74,8 +74,8 @@
       const items = newData || getLS();
 
       if (!items || !items.length) {
-        document.querySelector(containerSelector).innerHTML = '<p>Nada por aqui ainda... verifique daqui alguns minutos</p>';
-      };
+        document.querySelector(containerSelector).innerHTML = '';
+      }
 
       // 1. Skip completely if the content hasn't changed at all
       if (JSON.stringify(items) === JSON.stringify(currentPosts)) {

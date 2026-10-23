@@ -231,3 +231,7 @@ h2 {
   color: #444;
   font-size: 16px;
 }
+
+main:empty::after {
+  content: 'Nada por aqui ainda... verifique novamente daqui alguns minutos.';
+}
