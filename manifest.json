@@ -1,0 +1,8 @@
+{
+  "name": "Verificador de Fatos - Eleições 2026/2027",
+  "short_name": "PWA",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb"
+}

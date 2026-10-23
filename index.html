@@ -9,16 +9,155 @@
 </head>
 <body>
   <div class="layout">
-    <div>
-      <h1>Hello world</h1>
-      <h2>This is a test page, test pages gonna test!</h2>
-    </div>
-    <div>
-      <blockquote class="twitter-tweet"><p lang="pt" dir="ltr">seguinte rapeizes:
+    <header>
+      <h1>🔍 Verifique os Fatos</h1>
+      <h2>Um projeto feito pela comunidade para a comunidade. Acompanhe a checagem em tempo real das falas e propostas dos candidatos a presidente em 2026</h2>
+    </header>
 
-emmbeded timeline. o twitter deixar fazer embbed de uma TL. ou seja: uma conta institucional pra fazer o update em tempo real mas embbed dessa TL em um HTML estático servido via CDN com content refresh a cada 15 min caso a conta seja derrubada subir de novo</p>&mdash; ✪ Felippe 🇧🇷 (@FelippeRegazio) <a href="https://x.com/FelippeRegazio/status/2113400752869625895?ref_src=twsrc%5Etfw">October 22, 2026</a></blockquote>
-<script async src="https://platform.x.com/widgets.js" charset="utf-8"></script>
-    </div>
+    <main></main>
   </div>
+
+  <script>
+    const DELAY = 1000;
+    const NOW = new Date();
+    const INTERVAL = DELAY + NOW.getSeconds();
+
+    const labels = {
+      // name
+      n: {
+        1: 'Lula',
+        2: 'Flávio',
+      },
+      // checks
+      c: {
+        1: 'Verdadeiro',
+        2: 'Falso',
+        3: 'Parcial'
+      },
+      // images
+      i: {
+        1: 'lula.jpg',
+        2: 'flavio.webp',
+      }
+    };
+
+    // Keep state in memory
+    let currentPosts = [];
+
+    function getLS() {
+      try {
+        return JSON.parse(localStorage.getItem('data')) || [];
+      } catch {
+        return [];
+      }
+    }
+
+    function createCardHTML(item, index) {
+      return `
+        <article class="article-card" style="--animation-order: ${index};">
+          <div class="card-header">
+            <img src="/${labels.i[item.n]}" alt="Foto de perfil do ${labels.n[item.n]}" decoding="async" loading="lazy"/>
+            <div>
+              <div class="name">${labels.n[item.n]}</div>
+              <div class="badge check" data-type="${item.c}">${labels.c[item.c]}</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <p class="card-title">Disse que: ${escapeHTML(item.t)}</p>
+            <p class="card-text">${escapeHTML(item.v)}</p>
+          </div>
+        </article>
+      `;
+    }
+
+    function render(newData, containerSelector = 'main') {
+      const items = newData || getLS();
+      if (!items || !items.length) return;
+
+      // 1. Skip completely if the content hasn't changed at all
+      if (JSON.stringify(items) === JSON.stringify(currentPosts)) {
+        return;
+      }
+
+      const mainTarget = document.querySelector(containerSelector);
+      if (!mainTarget) return;
+
+      // Ensure the .article-grid wrapper exists
+      let grid = mainTarget.querySelector('.article-grid');
+      if (!grid) {
+        grid = document.createElement('div');
+        grid.className = 'article-grid';
+        mainTarget.appendChild(grid);
+      }
+
+      // 2. If memory is empty (initial page load), render everything
+      if (currentPosts.length === 0) {
+        grid.innerHTML = items.map((item, index) => createCardHTML(item, index)).join('');
+      } else {
+        // 3. Otherwise, append/prepend ONLY the new items to avoid re-rendering existing DOM nodes
+        const newItems = items.slice(currentPosts.length);
+        if (newItems.length > 0) {
+          const fragment = document.createDocumentFragment();
+          
+          newItems.forEach((item, idx) => {
+            const indexInTotal = currentPosts.length + idx;
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = createCardHTML(item, indexInTotal).trim();
+            fragment.appendChild(tempDiv.firstChild);
+          });
+
+          // Change to prepend() if newest posts should appear at the top
+          grid.appendChild(fragment); 
+        }
+      }
+
+      // Update in-memory reference
+      currentPosts = items;
+      // Scroll
+      setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 400);
+      
+    }
+
+    function escapeHTML(str) {
+      return str.replace(/[&<>'"]/g, 
+        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+      );
+    }
+
+    function generateAlphanumeric(length = 6) {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      let result = '';
+      for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return result;
+    }    
+
+    function update() {
+      fetch('/posts.json?v=' + generateAlphanumeric())
+        .then(r => r.json())
+        .then(data => {
+          if (data && data.length) {
+            // Save to localStorage and update DOM incrementally
+            localStorage.setItem('data', JSON.stringify(data));
+            render(data);
+          }
+        })
+        .catch(console.error);
+    }
+
+    // Initial render from localStorage, then perform first fetch
+    render();
+    update();
+    setInterval(update, INTERVAL);
+  </script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js');
+      });
+    }
+  </script>
 </body>
 </html>
