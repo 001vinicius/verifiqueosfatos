@@ -298,6 +298,37 @@ main.loading:empty::after {
   outline-offset: 2px;
 }
 
+.card.shared {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 1px var(--ink);
+}
+
+.share {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 18px 0 0 auto;
+  padding: 7px 12px;
+  background: none;
+  border: 1px solid var(--line2);
+  border-radius: 8px;
+  color: var(--ink2);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.share:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.share:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
 @media (max-width: 600px) {
   .layout {
     padding: 20px 20px 40px;
