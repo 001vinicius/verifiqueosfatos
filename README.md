@@ -130,6 +130,7 @@ Suba isso no serviço que está distribuindo sua posts.json e pronto, no proximo
     "v": "Aqui estará a verificação feita, com fontes e referências."
   }  
 ]
+```
 
 E assim adiante. Para entender esta estrutura, leia a sessão que explica sobre a posts.json nesta README. Mas em poucas palavras: a app é uma snapshot e front do que está declarado na posts.json. Para mostrar uma nova declaração apenas incremente a posts.json (que deve ser distribuída via ponto único de verdade, ou seja: mesmo endpoint e mesmo arquivo sem cache pra todo client). Quando sua posts.json muda, toda pessoa conectada recebe a mudança.
 
