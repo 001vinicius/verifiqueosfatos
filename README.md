@@ -90,7 +90,7 @@ Cada objeto no array seguindo essa estrutura será renderizado como um card cont
 
 Para atualizar a página para todos os clients, você só tem que atualizar a posts.json, lembrando que ela deve ser uma single source of truth. Se você adiciona um objeto novo, nas próximas requests todos os clientes passam a receber a atualziação e a tela reagirá automáticamente.
 
-## Então como adicionamos ou removemos declarações
+## Então como adicionamos ou removemos declarações?
 
 Sua aplicação deve apontar pra um único /posts.json servido através de qualquer serviço. Você apenas edita esse /posts.json e atualiza ele. No próximo round todos os clientes conectados receberão o update. Exemplo:
 
