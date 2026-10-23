@@ -138,8 +138,11 @@
     function render(newData, containerSelector = 'main') {
       const items = (Array.isArray(newData) ? newData : getLS()).filter(canRender);
 
-      if (!items || !items.length) {
+      // Nothing to show: leave <main> truly empty so main:empty shows the empty-state message
+      if (!items.length) {
         document.querySelector(containerSelector).innerHTML = '';
+        currentPosts = [];
+        return;
       }
 
       // 1. Skip completely if the content hasn't changed at all
