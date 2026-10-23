@@ -18,7 +18,9 @@ cache_name() {
 
 head_list=$(cached_files < sw.js)
 base_list=$(git show "$BASE:sw.js" | cached_files)
-changed=$(git diff --name-only "$BASE"...HEAD)
+# Compare the merge-base with the working tree, so uncommitted edits are also checked locally
+# (in CI the working tree equals HEAD). Untracked files are included too.
+changed=$( { git diff --name-only "$(git merge-base "$BASE" HEAD)"; git ls-files --others --exclude-standard; } )
 
 # Cached files that changed in this branch (including files added to or removed from the list)
 touched=$( { echo "$changed" | grep -Fxf <(echo "$head_list"; echo "$base_list") || true; } )
